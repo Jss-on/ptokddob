@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kendra's Pregnancy Care Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --brand-primary: #4b68d1;
+            --brand-secondary: #f28fb5;
+            --brand-accent: #50c4a6;
+            --text-primary: #24324d;
+            --text-secondary: #6b7a99;
+            --surface-base: #ffffff;
+            --surface-muted: #f7f8fb;
+            --border-subtle: #dbe2f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(160deg, #eef2ff 0%, #fdf2f8 45%, #f5fffa 100%);
+            padding: 30px 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--surface-base);
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 20px 50px rgba(75, 104, 209, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .date-info {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 26px;
+            padding: 6px;
+            background: var(--surface-muted);
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab {
+            padding: 12px 18px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            position: relative;
+            border-radius: 10px;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(75, 104, 209, 0.08);
+        }
+
+        .tab.active {
+            color: var(--surface-base);
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            box-shadow: 0 10px 20px rgba(75, 104, 209, 0.18);
+        }
+
+        .tab.active::after {
+            display: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 28px;
+            background: var(--surface-muted);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        h2 {
+            color: var(--text-primary);
+            font-size: 20px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .medication-grid, .meal-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .item {
+            background: var(--surface-base);
+            padding: 16px 18px;
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 14px rgba(36, 50, 77, 0.05);
+        }
+
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(36, 50, 77, 0.1);
+        }
+
+        .item.checked {
+            background: linear-gradient(135deg, rgba(80, 196, 166, 0.08), rgba(80, 196, 166, 0.15));
+            border-color: rgba(80, 196, 166, 0.3);
+        }
+
+        .item.checked .med-name,
+        .item.checked .meal-time {
+            color: var(--brand-accent);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .med-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .med-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--brand-primary);
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .meal-time {
+            font-weight: 600;
+            color: var(--brand-accent);
+            width: 90px;
+            font-size: 14px;
+        }
+
+        .notes-section {
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 110px;
+            font-family: inherit;
+            background: var(--surface-base);
+            box-shadow: inset 0 1px 3px rgba(36, 50, 77, 0.06);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(75, 104, 209, 0.15);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--brand-primary), #6f88f2);
+            color: white;
+            box-shadow: 0 10px 24px rgba(75, 104, 209, 0.35);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #93a6c8, #a8b9d9);
+            color: white;
+            box-shadow: 0 10px 24px rgba(107, 122, 153, 0.25);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b81, #ff9671);
+            color: white;
+            box-shadow: 0 10px 24px rgba(255, 107, 129, 0.28);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, var(--brand-accent), #74d6bb);
+            color: white;
+            box-shadow: 0 10px 24px rgba(80, 196, 166, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(36, 50, 77, 0.18);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reminder {
+            background: linear-gradient(135deg, rgba(242, 143, 181, 0.18), rgba(246, 211, 222, 0.7));
+            border: 1px solid rgba(242, 143, 181, 0.5);
+            padding: 16px 18px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .reminder strong {
+            color: var(--brand-secondary);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(75, 104, 209, 0.92), rgba(80, 196, 166, 0.92));
+            color: white;
+            padding: 18px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 18px 35px rgba(75, 104, 209, 0.28);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+        }
+
+        .week-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .day-card {
+            background: var(--surface-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 8px 18px rgba(36, 50, 77, 0.08);
+        }
+
+        .day-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px rgba(36, 50, 77, 0.12);
+        }
+
+        .day-card.today {
+            background: rgba(75, 104, 209, 0.12);
+            border-color: rgba(75, 104, 209, 0.4);
+        }
+
+        .day-card.completed {
+            background: rgba(80, 196, 166, 0.14);
+            border-color: rgba(80, 196, 166, 0.45);
+        }
+
+        .day-card.partial {
+            background: rgba(255, 194, 111, 0.18);
+            border-color: rgba(255, 194, 111, 0.45);
+        }
+
+        .day-card.missed {
+            background: rgba(255, 107, 129, 0.16);
+            border-color: rgba(255, 107, 129, 0.45);
+        }
+
+        .day-date {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .day-score {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .day-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .history-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: var(--surface-muted);
+            border-radius: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        .history-item {
+            background: var(--surface-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 20px rgba(36, 50, 77, 0.08);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .history-notes {
+            background: var(--surface-muted);
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .date-picker {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="date"] {
+            padding: 10px 14px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            font-family: inherit;
+            background: var(--surface-base);
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .week-summary {
+            background: linear-gradient(135deg, rgba(75, 104, 209, 0.08), rgba(80, 196, 166, 0.12));
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 24px;
+            border: 1px solid rgba(75, 104, 209, 0.18);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--brand-primary);
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 14px;
+            }
+
+            .container {
+                padding: 22px;
+                border-radius: 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .week-calendar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .week-calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .checkbox-wrapper {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .meal-time {
+                width: 100%;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(75, 104, 209, 0.4);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border: none;
+            }
+
+            .tabs,
+            .button-group {
+                display: none;
+            }
+
+            .tab-content {
+                display: block !important;
+            }
+
+            .item {
+                break-inside: avoid;
+            }
+        }
+
+        /* Fade-in animation for items */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .item,
+        .day-card,
+        .history-item {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💊 Pregnancy Care Tracker - Kendra</h1>
+        <div class="date-info">
+            <strong>Today:</strong> <span id="currentDate"></span> | 
+            <strong>Week:</strong> <span id="weekNumber"></span> of Pregnancy
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('daily')">📅 Daily Tracker</button>
+            <button class="tab" onclick="switchTab('weekly')">📊 Weekly View</button>
+            <button class="tab" onclick="switchTab('history')">📜 History</button>
+            <button class="tab" onclick="switchTab('reports')">📈 Reports</button>
+        </div>
+
+        <!-- Daily Tab -->
+        <div id="daily-tab" class="tab-content active">
+            <div class="reminder">
+                <strong>⚠️ Important Reminders:</strong>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Complete bed rest required</li>
+                    <li>Low carbohydrate diet - avoid sweets, fatty & oily foods</li>
+                    <li>Next appointment: Dr. Taleon - Nov 14, 2025 | Dr. Brobo - 2 weeks after discharge</li>
+                </ul>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="medsTaken">0/10</div>
+                    <div class="stat-label">Medications Taken Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="mealsTaken">0/5</div>
+                    <div class="stat-label">Meals Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayScore">0%</div>
+                    <div class="stat-label">Today's Compliance</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 Daily Medications</h2>
+                <div class="medication-grid">
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">LEVOTHYROXINE (Euthyrox)</div>
+                            <div class="med-details">50mcg • 6:00 AM • 1 hour before breakfast</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med1" class="med-check" data-med="LEVOTHYROXINE">
+                            <label for="med1" class="time-label">6:00 AM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">METFORMIN</div>
+                            <div class="med-details">500mg • 7:00 AM • Before meals</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med2-1" class="med-check" data-med="METFORMIN-AM">
+                            <label for="med2-1" class="time-label">7:00 AM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">METFORMIN</div>
+                            <div class="med-details">500mg • 7:00 PM • Before meals (2nd dose)</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med2-2" class="med-check" data-med="METFORMIN-PM">
+                            <label for="med2-2" class="time-label">7:00 PM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">CEFUROXIME (Cefurex)</div>
+                            <div class="med-details">500mg • 8AM-8PM • 2x daily for 2+ days • After meals</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med3-1" class="med-check" data-med="CEFUROXIME-AM">
+                            <label for="med3-1" class="time-label">8:00 AM</label>
+                            <input type="checkbox" id="med3-2" class="med-check" data-med="CEFUROXIME-PM">
+                            <label for="med3-2" class="time-label">8:00 PM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">ISOXSUPRINE (Isoxilan)</div>
+                            <div class="med-details">10mg • 8AM-2PM-8PM • 3x daily • After meals</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med4-1" class="med-check" data-med="ISOXSUPRINE-AM">
+                            <label for="med4-1" class="time-label">8AM</label>
+                            <input type="checkbox" id="med4-2" class="med-check" data-med="ISOXSUPRINE-NOON">
+                            <label for="med4-2" class="time-label">2PM</label>
+                            <input type="checkbox" id="med4-3" class="med-check" data-med="ISOXSUPRINE-PM">
+                            <label for="med4-3" class="time-label">8PM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">PROGESTERONE (Heragest)</div>
+                            <div class="med-details">200mg • 8:00 PM • Insert in vagina • For 5 days</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med5" class="med-check" data-med="PROGESTERONE">
+                            <label for="med5" class="time-label">8:00 PM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">ASPIRIN</div>
+                            <div class="med-details">100mg • 8:00 PM • Once daily</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med6" class="med-check" data-med="ASPIRIN">
+                            <label for="med6" class="time-label">8:00 PM</label>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="med-name">PRENATAL VITAMINS</div>
+                            <div class="med-details">1 tablet • 8:00 PM • Continue daily</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="med7" class="med-check" data-med="VITAMINS">
+                            <label for="med7" class="time-label">8:00 PM</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🍽️ Meal Schedule (1600 kcal/day)</h2>
+                <div class="meal-grid">
+                    <div class="item">
+                        <span class="meal-time">7:00 AM</span>
+                        <div class="item-info">
+                            <div class="med-name">BREAKFAST</div>
+                            <div class="med-details">Main meal</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="meal1" class="meal-check" data-meal="BREAKFAST">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <span class="meal-time">9:00 AM</span>
+                        <div class="item-info">
+                            <div class="med-name">MORNING SNACK</div>
+                            <div class="med-details">Light, low carb</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="meal2" class="meal-check" data-meal="SNACK-AM">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <span class="meal-time">12:00 PM</span>
+                        <div class="item-info">
+                            <div class="med-name">LUNCH</div>
+                            <div class="med-details">Main meal</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="meal3" class="meal-check" data-meal="LUNCH">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <span class="meal-time">3:00 PM</span>
+                        <div class="item-info">
+                            <div class="med-name">AFTERNOON SNACK</div>
+                            <div class="med-details">Light, low carb</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="meal4" class="meal-check" data-meal="SNACK-PM">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <span class="meal-time">7:00 PM</span>
+                        <div class="item-info">
+                            <div class="med-name">DINNER</div>
+                            <div class="med-details">Main meal</div>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="meal5" class="meal-check" data-meal="DINNER">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section notes-section">
+                <h2>📝 Daily Notes</h2>
+                <textarea id="dailyNotes" placeholder="Record symptoms, blood pressure readings, baby movements, or any concerns..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="save-btn" onclick="saveDaily()">💾 Save Today's Progress</button>
+                <button class="reset-btn" onclick="resetDaily()">🔄 Reset Today</button>
+                <button class="export-btn" onclick="exportData()">📤 Export All Data</button>
+            </div>
+        </div>
+
+        <!-- Weekly View Tab -->
+        <div id="weekly-tab" class="tab-content">
+            <h2>📊 This Week's Progress</h2>
+            
+            <div class="date-picker">
+                <label>Select Week: </label>
+                <input type="date" id="weekPicker" onchange="loadWeekView()">
+                <button class="save-btn" onclick="loadCurrentWeek()">Current Week</button>
+            </div>
+            
+            <div class="week-calendar" id="weekCalendar">
+                <!-- Week view will be populated here -->
+            </div>
+            
+            <div class="week-summary" id="weekSummary">
+                <h3>Week Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-value" id="weekAvgCompliance">0%</div>
+                        <div class="summary-label">Average Compliance</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="weekMedsMissed">0</div>
+                        <div class="summary-label">Medications Missed</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="weekMealsMissed">0</div>
+                        <div class="summary-label">Meals Missed</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="weekDaysTracked">0/7</div>
+                        <div class="summary-label">Days Tracked</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-content">
+            <h2>📜 History</h2>
+            
+            <div class="date-picker">
+                <label>From: </label>
+                <input type="date" id="historyFrom" onchange="loadHistory()">
+                <label>To: </label>
+                <input type="date" id="historyTo" onchange="loadHistory()">
+            </div>
+            
+            <div class="history-list" id="historyList">
+                <!-- History items will be populated here -->
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports-tab" class="tab-content">
+            <h2>📈 Reports & Analytics</h2>
+            
+            <div class="section">
+                <h3>Overall Statistics</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-value" id="totalDaysTracked">0</div>
+                        <div class="summary-label">Total Days Tracked</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="overallCompliance">0%</div>
+                        <div class="summary-label">Overall Compliance</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="currentStreak">0</div>
+                        <div class="summary-label">Current Streak (days)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="bestStreak">0</div>
+                        <div class="summary-label">Best Streak (days)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Medication Adherence by Type</h3>
+                <div id="medicationStats"></div>
+            </div>
+            
+            <div class="button-group">
+                <button class="export-btn" onclick="generateReport()">📄 Generate Full Report</button>
+                <button class="save-btn" onclick="printReport()">🖨️ Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for tracking
+        const TrackerData = {
+            getDateKey(date) {
+                return date.toISOString().split('T')[0];
+            },
+            
+            saveDay(data) {
+                const key = `tracker_${data.date}`;
+                localStorage.setItem(key, JSON.stringify(data));
+                this.updateIndexes(data.date);
+            },
+            
+            loadDay(dateStr) {
+                const key = `tracker_${dateStr}`;
+                return JSON.parse(localStorage.getItem(key) || 'null');
+            },
+            
+            updateIndexes(dateStr) {
+                let indexes = JSON.parse(localStorage.getItem('tracker_indexes') || '[]');
+                if (!indexes.includes(dateStr)) {
+                    indexes.push(dateStr);
+                    indexes.sort();
+                    localStorage.setItem('tracker_indexes', JSON.stringify(indexes));
+                }
+            },
+            
+            getAllDays() {
+                const indexes = JSON.parse(localStorage.getItem('tracker_indexes') || '[]');
+                return indexes.map(date => this.loadDay(date)).filter(Boolean);
+            },
+            
+            getRange(from, to) {
+                const fromDate = new Date(from);
+                const toDate = new Date(to);
+                const days = [];
+                
+                for (let d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+                    const data = this.loadDay(this.getDateKey(d));
+                    if (data) days.push(data);
+                }
+                
+                return days;
+            }
+        };
+
+        // Initialize
+        let currentTab = 'daily';
+        
+        function updateDate() {
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Calculate pregnancy week (32 weeks as of Nov 7, 2025)
+            const baseDate = new Date('2025-11-07');
+            const diffTime = Math.abs(today - baseDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const additionalWeeks = Math.floor(diffDays / 7);
+            document.getElementById('weekNumber').textContent = 32 + additionalWeeks;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Load tab-specific data
+            switch(tabName) {
+                case 'weekly':
+                    loadCurrentWeek();
+                    break;
+                case 'history':
+                    loadHistory();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
+        }
+
+        // Daily tracking functions
+        function updateStats() {
+            const medChecks = document.querySelectorAll('.med-check:checked').length;
+            const totalMeds = document.querySelectorAll('.med-check').length;
+            document.getElementById('medsTaken').textContent = `${medChecks}/${totalMeds}`;
+
+            const mealChecks = document.querySelectorAll('.meal-check:checked').length;
+            const totalMeals = document.querySelectorAll('.meal-check').length;
+            document.getElementById('mealsTaken').textContent = `${mealChecks}/${totalMeals}`;
+
+            const totalCompliance = Math.round(((medChecks + mealChecks) / (totalMeds + totalMeals)) * 100);
+            document.getElementById('todayScore').textContent = `${totalCompliance}%`;
+        }
+
+        function saveDaily() {
+            const today = TrackerData.getDateKey(new Date());
+            
+            // Collect medication data
+            const medications = {};
+            document.querySelectorAll('.med-check').forEach(cb => {
+                medications[cb.dataset.med] = cb.checked;
+            });
+            
+            // Collect meal data
+            const meals = {};
+            document.querySelectorAll('.meal-check').forEach(cb => {
+                meals[cb.dataset.meal] = cb.checked;
+            });
+            
+            const medChecks = Object.values(medications).filter(v => v).length;
+            const mealChecks = Object.values(meals).filter(v => v).length;
+            const totalItems = Object.keys(medications).length + Object.keys(meals).length;
+            const completedItems = medChecks + mealChecks;
+            
+            const dailyData = {
+                date: today,
+                medications: medications,
+                meals: meals,
+                notes: document.getElementById('dailyNotes').value,
+                compliance: Math.round((completedItems / totalItems) * 100),
+                timestamp: new Date().toISOString()
+            };
+            
+            TrackerData.saveDay(dailyData);
+            showToast('✅ Progress saved successfully!');
+            
+            // Refresh current tab
+            if (currentTab === 'weekly') loadCurrentWeek();
+            if (currentTab === 'history') loadHistory();
+        }
+
+        function loadToday() {
+            const today = TrackerData.getDateKey(new Date());
+            const savedData = TrackerData.loadDay(today);
+            
+            if (savedData) {
+                // Restore medications
+                Object.entries(savedData.medications || {}).forEach(([med, checked]) => {
+                    const cb = document.querySelector(`.med-check[data-med="${med}"]`);
+                    if (cb) cb.checked = checked;
+                });
+                
+                // Restore meals
+                Object.entries(savedData.meals || {}).forEach(([meal, checked]) => {
+                    const cb = document.querySelector(`.meal-check[data-meal="${meal}"]`);
+                    if (cb) cb.checked = checked;
+                });
+                
+                // Restore notes
+                document.getElementById('dailyNotes').value = savedData.notes || '';
+            }
+            updateStats();
+        }
+
+        function resetDaily() {
+            if (confirm('Are you sure you want to reset today\'s entries?')) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.getElementById('dailyNotes').value = '';
+                updateStats();
+            }
+        }
+
+        // Weekly view functions
+        function loadCurrentWeek() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - dayOfWeek);
+            
+            document.getElementById('weekPicker').value = TrackerData.getDateKey(weekStart);
+            loadWeekView();
+        }
+
+        function loadWeekView() {
+            const selectedDate = new Date(document.getElementById('weekPicker').value || new Date());
+            const dayOfWeek = selectedDate.getDay();
+            const weekStart = new Date(selectedDate);
+            weekStart.setDate(selectedDate.getDate() - dayOfWeek);
+            
+            const calendar = document.getElementById('weekCalendar');
+            calendar.innerHTML = '';
+            
+            let totalCompliance = 0;
+            let daysTracked = 0;
+            let totalMedsMissed = 0;
+            let totalMealsMissed = 0;
+            
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(weekStart);
+                currentDate.setDate(weekStart.getDate() + i);
+                const dateKey = TrackerData.getDateKey(currentDate);
+                const dayData = TrackerData.loadDay(dateKey);
+                
+                const isToday = dateKey === TrackerData.getDateKey(new Date());
+                
+                let dayClass = '';
+                let score = '-';
+                
+                if (dayData) {
+                    score = dayData.compliance + '%';
+                    daysTracked++;
+                    totalCompliance += dayData.compliance;
+                    
+                    if (dayData.medications) {
+                        totalMedsMissed += Object.values(dayData.medications).filter(v => !v).length;
+                    }
+                    if (dayData.meals) {
+                        totalMealsMissed += Object.values(dayData.meals).filter(v => !v).length;
+                    }
+                    
+                    if (dayData.compliance >= 90) dayClass = 'completed';
+                    else if (dayData.compliance >= 70) dayClass = 'partial';
+                    else dayClass = 'missed';
+                }
+                
+                if (isToday) dayClass += ' today';
+                
+                const dayCard = document.createElement('div');
+                dayCard.className = `day-card ${dayClass}`;
+                dayCard.onclick = () => viewDayDetails(dateKey);
+                dayCard.innerHTML = `
+                    <div class="day-date">${days[i]}</div>
+                    <div class="day-date">${currentDate.getDate()}</div>
+                    <div class="day-score">${score}</div>
+                    <div class="day-label">Compliance</div>
+                `;
+                
+                calendar.appendChild(dayCard);
+            }
+            
+            document.getElementById('weekAvgCompliance').textContent = 
+                daysTracked > 0 ? Math.round(totalCompliance / daysTracked) + '%' : '0%';
+            document.getElementById('weekMedsMissed').textContent = totalMedsMissed;
+            document.getElementById('weekMealsMissed').textContent = totalMealsMissed;
+            document.getElementById('weekDaysTracked').textContent = `${daysTracked}/7`;
+        }
+
+        function viewDayDetails(dateKey) {
+            const data = TrackerData.loadDay(dateKey);
+            if (!data) {
+                showToast('⚠️ No data recorded for this day', 'warning');
+                return;
+            }
+            
+            let details = `Date: ${new Date(dateKey).toLocaleDateString()}\n`;
+            details += `Compliance: ${data.compliance}%\n\n`;
+            
+            if (data.notes) {
+                details += `Notes: ${data.notes}\n`;
+            }
+            
+            alert(details);
+        }
+
+        // History functions
+        function loadHistory() {
+            const fromDate = document.getElementById('historyFrom').value || 
+                           new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0];
+            const toDate = document.getElementById('historyTo').value || 
+                         new Date().toISOString().split('T')[0];
+            
+            document.getElementById('historyFrom').value = fromDate;
+            document.getElementById('historyTo').value = toDate;
+            
+            const historyData = TrackerData.getRange(fromDate, toDate);
+            const historyList = document.getElementById('historyList');
+            
+            historyList.innerHTML = '';
+            
+            if (historyData.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">No Records Found</div>
+                        <div>No tracking data available for the selected period</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            historyData.reverse().forEach(day => {
+                const medCount = day.medications ? Object.values(day.medications).filter(v => v).length : 0;
+                const mealCount = day.meals ? Object.values(day.meals).filter(v => v).length : 0;
+                
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-header">
+                        <span>${new Date(day.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        })}</span>
+                        <span style="color: ${day.compliance >= 80 ? '#27ae60' : '#e74c3c'}">
+                            ${day.compliance}% Compliance
+                        </span>
+                    </div>
+                    <div class="history-stats">
+                        <span>💊 Medications: ${medCount}/${Object.keys(day.medications || {}).length}</span>
+                        <span>🍽️ Meals: ${mealCount}/${Object.keys(day.meals || {}).length}</span>
+                    </div>
+                    ${day.notes ? `<div class="history-notes">📝 ${day.notes}</div>` : ''}
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // Reports functions
+        function loadReports() {
+            const allData = TrackerData.getAllDays();
+            
+            document.getElementById('totalDaysTracked').textContent = allData.length;
+            
+            if (allData.length > 0) {
+                const avgCompliance = Math.round(
+                    allData.reduce((sum, day) => sum + day.compliance, 0) / allData.length
+                );
+                document.getElementById('overallCompliance').textContent = avgCompliance + '%';
+                
+                let currentStreak = 0;
+                let bestStreak = 0;
+                let tempStreak = 0;
+                const today = TrackerData.getDateKey(new Date());
+                
+                allData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                allData.forEach((day, index) => {
+                    if (day.compliance >= 80) {
+                        tempStreak++;
+                        if (tempStreak > bestStreak) bestStreak = tempStreak;
+                        if (day.date === today || index === allData.length - 1) {
+                            currentStreak = tempStreak;
+                        }
+                    } else {
+                        tempStreak = 0;
+                    }
+                });
+                
+                document.getElementById('currentStreak').textContent = currentStreak;
+                document.getElementById('bestStreak').textContent = bestStreak;
+                
+                const medStats = {};
+                allData.forEach(day => {
+                    if (day.medications) {
+                        Object.entries(day.medications).forEach(([med, taken]) => {
+                            if (!medStats[med]) medStats[med] = { taken: 0, total: 0 };
+                            medStats[med].total++;
+                            if (taken) medStats[med].taken++;
+                        });
+                    }
+                });
+                
+                const medStatsDiv = document.getElementById('medicationStats');
+                medStatsDiv.innerHTML = '';
+                
+                Object.entries(medStats).forEach(([med, stats]) => {
+                    const percentage = Math.round((stats.taken / stats.total) * 100);
+                    medStatsDiv.innerHTML += `
+                        <div class="item">
+                            <div class="item-info">
+                                <div class="med-name">${med.replace(/-/g, ' ')}</div>
+                                <div class="med-details">Taken ${stats.taken} of ${stats.total} times</div>
+                            </div>
+                            <div style="font-size: 20px; font-weight: bold; color: ${percentage >= 80 ? '#27ae60' : '#e74c3c'}">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Export functions
+        function exportData() {
+            const allData = TrackerData.getAllDays();
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `pregnancy-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateReport() {
+            const allData = TrackerData.getAllDays();
+            
+            if (allData.length === 0) {
+                showToast('⚠️ No data available to generate report', 'warning');
+                return;
+            }
+            
+            let report = '=== PREGNANCY CARE TRACKING REPORT ===\n\n';
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += `Patient: Kendra Sayson\n`;
+            report += `Period: ${allData[0].date} to ${allData[allData.length - 1].date}\n\n`;
+            
+            report += '=== SUMMARY ===\n';
+            report += `Total Days Tracked: ${allData.length}\n`;
+            
+            const avgCompliance = Math.round(
+                allData.reduce((sum, day) => sum + day.compliance, 0) / allData.length
+            );
+            report += `Average Compliance: ${avgCompliance}%\n\n`;
+            
+            report += '=== DAILY DETAILS ===\n';
+            allData.forEach(day => {
+                report += `\nDate: ${day.date}\n`;
+                report += `Compliance: ${day.compliance}%\n`;
+                if (day.notes) report += `Notes: ${day.notes}\n`;
+            });
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `pregnancy-report-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Update checkbox visual feedback
+        function updateCheckboxVisuals() {
+            document.querySelectorAll('.item').forEach(item => {
+                const checkboxes = item.querySelectorAll('input[type="checkbox"]');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                
+                if (checkboxes.length > 0 && (allChecked || (checkboxes.length === 1 && anyChecked))) {
+                    item.classList.add('checked');
+                } else {
+                    item.classList.remove('checked');
+                }
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            loadToday();
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    updateStats();
+                    updateCheckboxVisuals();
+                    clearTimeout(window.autoSaveTimer);
+                    window.autoSaveTimer = setTimeout(() => {
+                        saveDaily();
+                    }, 2000);
+                });
+            });
+            
+            updateCheckboxVisuals();
+            
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            document.getElementById('historyFrom').value = TrackerData.getDateKey(thirtyDaysAgo);
+            document.getElementById('historyTo').value = TrackerData.getDateKey(today);
+        });
+    </script>
+</body>
+</html>
