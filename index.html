@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kendra's Pregnancy Care Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -552,6 +553,89 @@
             color: var(--text-secondary);
         }
 
+        .progress-bar-container {
+            background: var(--surface-muted);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar.excellent {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .progress-bar.good {
+            background: linear-gradient(90deg, #3498db, #5dade2);
+        }
+
+        .progress-bar.fair {
+            background: linear-gradient(90deg, #f39c12, #f1c40f);
+        }
+
+        .progress-bar.poor {
+            background: linear-gradient(90deg, #e74c3c, #ec7063);
+        }
+
+        .stat-item-detailed {
+            background: var(--surface-base);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .stat-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stat-item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-item-percentage {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .trend-indicator {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trend-indicator.normal {
+            background: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .trend-indicator.high {
+            background: rgba(255, 107, 129, 0.15);
+            color: #c0392b;
+            border: 1px solid rgba(255, 107, 129, 0.3);
+        }
+
+        .trend-indicator.low {
+            background: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 20px 14px;
@@ -782,35 +866,13 @@
                     <div class="item">
                         <div class="item-info">
                             <div class="med-name">METFORMIN</div>
-                            <div class="med-details">500mg • 7:00 AM • Before meals</div>
+                            <div class="med-details">500mg • 7:00 AM & 7:00 PM • Before meals</div>
                         </div>
                         <div class="checkbox-wrapper">
                             <input type="checkbox" id="med2-1" class="med-check" data-med="METFORMIN-AM">
                             <label for="med2-1" class="time-label">7:00 AM</label>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="item-info">
-                            <div class="med-name">METFORMIN</div>
-                            <div class="med-details">500mg • 7:00 PM • Before meals (2nd dose)</div>
-                        </div>
-                        <div class="checkbox-wrapper">
                             <input type="checkbox" id="med2-2" class="med-check" data-med="METFORMIN-PM">
                             <label for="med2-2" class="time-label">7:00 PM</label>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="item-info">
-                            <div class="med-name">CEFUROXIME (Cefurex)</div>
-                            <div class="med-details">500mg • 8AM-8PM • 2x daily for 2+ days • After meals</div>
-                        </div>
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="med3-1" class="med-check" data-med="CEFUROXIME-AM">
-                            <label for="med3-1" class="time-label">8:00 AM</label>
-                            <input type="checkbox" id="med3-2" class="med-check" data-med="CEFUROXIME-PM">
-                            <label for="med3-2" class="time-label">8:00 PM</label>
                         </div>
                     </div>
 
@@ -1010,6 +1072,15 @@
         <div id="reports-tab" class="tab-content">
             <h2>📈 Reports & Analytics</h2>
             
+            <div class="date-picker">
+                <label>Report Period: </label>
+                <input type="date" id="reportFrom" onchange="loadReports()">
+                <label>to</label>
+                <input type="date" id="reportTo" onchange="loadReports()">
+                <button class="save-btn" onclick="setReportAllTime()">All Time</button>
+                <button class="save-btn" onclick="setReportLast30Days()">Last 30 Days</button>
+            </div>
+            
             <div class="section">
                 <h3>Overall Statistics</h3>
                 <div class="summary-grid">
@@ -1033,8 +1104,36 @@
             </div>
             
             <div class="section">
-                <h3>Medication Adherence by Type</h3>
+                <h3>🩸 Blood Sugar Analysis</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-value" id="sugarAvg">--</div>
+                        <div class="summary-label">Average (mg/dL)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="sugarMin">--</div>
+                        <div class="summary-label">Minimum (mg/dL)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="sugarMax">--</div>
+                        <div class="summary-label">Maximum (mg/dL)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="sugarReadingsCount">0</div>
+                        <div class="summary-label">Total Readings</div>
+                    </div>
+                </div>
+                <div id="sugarTrendIndicator" class="trend-indicator"></div>
+            </div>
+            
+            <div class="section">
+                <h3>💊 Medication Adherence by Type</h3>
                 <div id="medicationStats"></div>
+            </div>
+            
+            <div class="section">
+                <h3>🍽️ Meal Compliance Breakdown</h3>
+                <div id="mealStats"></div>
             </div>
             
             <div class="button-group">
@@ -1588,68 +1687,212 @@
         }
 
         // Reports functions
-        function loadReports() {
+        function getReportDateRange() {
+            const fromInput = document.getElementById('reportFrom');
+            const toInput = document.getElementById('reportTo');
+            
+            if (!fromInput || !toInput) {
+                return { from: null, to: null, allData: TrackerData.getAllDays() };
+            }
+            
+            const fromDate = fromInput.value;
+            const toDate = toInput.value;
+            
+            if (fromDate && toDate) {
+                return { from: fromDate, to: toDate, allData: TrackerData.getRange(fromDate, toDate) };
+            }
+            
+            return { from: null, to: null, allData: TrackerData.getAllDays() };
+        }
+        
+        function setReportAllTime() {
             const allData = TrackerData.getAllDays();
+            if (allData.length === 0) return;
+            
+            const dates = allData.map(d => d.date).sort();
+            document.getElementById('reportFrom').value = dates[0];
+            document.getElementById('reportTo').value = dates[dates.length - 1];
+            loadReports();
+        }
+        
+        function setReportLast30Days() {
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            document.getElementById('reportFrom').value = TrackerData.getDateKey(thirtyDaysAgo);
+            document.getElementById('reportTo').value = TrackerData.getDateKey(today);
+            loadReports();
+        }
+        
+        function getProgressBarClass(percentage) {
+            if (percentage >= 90) return 'excellent';
+            if (percentage >= 75) return 'good';
+            if (percentage >= 60) return 'fair';
+            return 'poor';
+        }
+
+        function loadReports() {
+            const { allData } = getReportDateRange();
             
             document.getElementById('totalDaysTracked').textContent = allData.length;
             
-            if (allData.length > 0) {
-                const avgCompliance = Math.round(
-                    allData.reduce((sum, day) => sum + day.compliance, 0) / allData.length
-                );
-                document.getElementById('overallCompliance').textContent = avgCompliance + '%';
-                
-                let currentStreak = 0;
-                let bestStreak = 0;
-                let tempStreak = 0;
-                const today = TrackerData.getDateKey(new Date());
-                
-                allData.sort((a, b) => new Date(a.date) - new Date(b.date));
-                
-                allData.forEach((day, index) => {
-                    if (day.compliance >= 80) {
-                        tempStreak++;
-                        if (tempStreak > bestStreak) bestStreak = tempStreak;
-                        if (day.date === today || index === allData.length - 1) {
-                            currentStreak = tempStreak;
-                        }
-                    } else {
-                        tempStreak = 0;
-                    }
-                });
-                
-                document.getElementById('currentStreak').textContent = currentStreak;
-                document.getElementById('bestStreak').textContent = bestStreak;
-                
-                const medStats = {};
-                allData.forEach(day => {
-                    if (day.medications) {
-                        Object.entries(day.medications).forEach(([med, taken]) => {
-                            if (!medStats[med]) medStats[med] = { taken: 0, total: 0 };
-                            medStats[med].total++;
-                            if (taken) medStats[med].taken++;
-                        });
-                    }
-                });
-                
-                const medStatsDiv = document.getElementById('medicationStats');
-                medStatsDiv.innerHTML = '';
-                
-                Object.entries(medStats).forEach(([med, stats]) => {
-                    const percentage = Math.round((stats.taken / stats.total) * 100);
-                    medStatsDiv.innerHTML += `
-                        <div class="item">
-                            <div class="item-info">
-                                <div class="med-name">${med.replace(/-/g, ' ')}</div>
-                                <div class="med-details">Taken ${stats.taken} of ${stats.total} times</div>
-                            </div>
-                            <div style="font-size: 20px; font-weight: bold; color: ${percentage >= 80 ? '#27ae60' : '#e74c3c'}">
-                                ${percentage}%
-                            </div>
-                        </div>
-                    `;
-                });
+            if (allData.length === 0) {
+                document.getElementById('overallCompliance').textContent = '0%';
+                document.getElementById('currentStreak').textContent = '0';
+                document.getElementById('bestStreak').textContent = '0';
+                document.getElementById('sugarAvg').textContent = '--';
+                document.getElementById('sugarMin').textContent = '--';
+                document.getElementById('sugarMax').textContent = '--';
+                document.getElementById('sugarReadingsCount').textContent = '0';
+                document.getElementById('medicationStats').innerHTML = '<p style="color: var(--text-secondary);">No data available</p>';
+                document.getElementById('mealStats').innerHTML = '<p style="color: var(--text-secondary);">No data available</p>';
+                document.getElementById('sugarTrendIndicator').innerHTML = '';
+                return;
             }
+            
+            // Overall compliance
+            const avgCompliance = Math.round(
+                allData.reduce((sum, day) => sum + day.compliance, 0) / allData.length
+            );
+            document.getElementById('overallCompliance').textContent = avgCompliance + '%';
+            
+            // Streaks
+            let currentStreak = 0;
+            let bestStreak = 0;
+            let tempStreak = 0;
+            const today = TrackerData.getDateKey(new Date());
+            
+            allData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            allData.forEach((day, index) => {
+                if (day.compliance >= 80) {
+                    tempStreak++;
+                    if (tempStreak > bestStreak) bestStreak = tempStreak;
+                    if (day.date === today || index === allData.length - 1) {
+                        currentStreak = tempStreak;
+                    }
+                } else {
+                    tempStreak = 0;
+                }
+            });
+            
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('bestStreak').textContent = bestStreak;
+            
+            // Blood sugar analytics
+            const allSugarLevels = [];
+            allData.forEach(day => {
+                if (day.sugarReadings) {
+                    day.sugarReadings.forEach(reading => {
+                        if (reading.level != null && !Number.isNaN(reading.level)) {
+                            allSugarLevels.push(reading.level);
+                        }
+                    });
+                }
+            });
+            
+            if (allSugarLevels.length > 0) {
+                const sugarAvg = allSugarLevels.reduce((sum, v) => sum + v, 0) / allSugarLevels.length;
+                const sugarMin = Math.min(...allSugarLevels);
+                const sugarMax = Math.max(...allSugarLevels);
+                
+                document.getElementById('sugarAvg').textContent = sugarAvg.toFixed(1);
+                document.getElementById('sugarMin').textContent = sugarMin.toFixed(1);
+                document.getElementById('sugarMax').textContent = sugarMax.toFixed(1);
+                document.getElementById('sugarReadingsCount').textContent = allSugarLevels.length;
+                
+                // Trend indicator
+                const trendDiv = document.getElementById('sugarTrendIndicator');
+                if (sugarAvg < 70) {
+                    trendDiv.className = 'trend-indicator low';
+                    trendDiv.innerHTML = '⚠️ Average blood sugar is LOW. Consult your doctor.';
+                } else if (sugarAvg > 140) {
+                    trendDiv.className = 'trend-indicator high';
+                    trendDiv.innerHTML = '⚠️ Average blood sugar is HIGH. Review diet and medications.';
+                } else {
+                    trendDiv.className = 'trend-indicator normal';
+                    trendDiv.innerHTML = '✅ Blood sugar levels are in normal range.';
+                }
+            } else {
+                document.getElementById('sugarAvg').textContent = '--';
+                document.getElementById('sugarMin').textContent = '--';
+                document.getElementById('sugarMax').textContent = '--';
+                document.getElementById('sugarReadingsCount').textContent = '0';
+                document.getElementById('sugarTrendIndicator').innerHTML = '';
+            }
+            
+            // Medication stats with progress bars
+            const medStats = {};
+            allData.forEach(day => {
+                if (day.medications) {
+                    Object.entries(day.medications).forEach(([med, taken]) => {
+                        if (!medStats[med]) medStats[med] = { taken: 0, total: 0 };
+                        medStats[med].total++;
+                        if (taken) medStats[med].taken++;
+                    });
+                }
+            });
+            
+            const medStatsDiv = document.getElementById('medicationStats');
+            medStatsDiv.innerHTML = '';
+            
+            Object.entries(medStats).forEach(([med, stats]) => {
+                const percentage = Math.round((stats.taken / stats.total) * 100);
+                const barClass = getProgressBarClass(percentage);
+                medStatsDiv.innerHTML += `
+                    <div class="stat-item-detailed">
+                        <div class="stat-item-header">
+                            <span class="stat-item-name">${med.replace(/-/g, ' ')}</span>
+                            <span class="stat-item-percentage" style="color: ${percentage >= 80 ? '#27ae60' : '#e74c3c'}">
+                                ${percentage}%
+                            </span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                            Taken ${stats.taken} of ${stats.total} times
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar ${barClass}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Meal stats with progress bars
+            const mealStats = {};
+            allData.forEach(day => {
+                if (day.meals) {
+                    Object.entries(day.meals).forEach(([meal, taken]) => {
+                        if (!mealStats[meal]) mealStats[meal] = { taken: 0, total: 0 };
+                        mealStats[meal].total++;
+                        if (taken) mealStats[meal].taken++;
+                    });
+                }
+            });
+            
+            const mealStatsDiv = document.getElementById('mealStats');
+            mealStatsDiv.innerHTML = '';
+            
+            Object.entries(mealStats).forEach(([meal, stats]) => {
+                const percentage = Math.round((stats.taken / stats.total) * 100);
+                const barClass = getProgressBarClass(percentage);
+                mealStatsDiv.innerHTML += `
+                    <div class="stat-item-detailed">
+                        <div class="stat-item-header">
+                            <span class="stat-item-name">${meal.replace(/-/g, ' ')}</span>
+                            <span class="stat-item-percentage" style="color: ${percentage >= 80 ? '#27ae60' : '#e74c3c'}">
+                                ${percentage}%
+                            </span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                            Completed ${stats.taken} of ${stats.total} times
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar ${barClass}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         // Export functions
@@ -1669,51 +1912,281 @@
         }
 
         function generateReport() {
-            const allData = TrackerData.getAllDays();
+            const { allData } = getReportDateRange();
             
             if (allData.length === 0) {
                 showToast('⚠️ No data available to generate report', 'warning');
                 return;
             }
             
-            let report = '=== PREGNANCY CARE TRACKING REPORT ===\n\n';
-            report += `Generated: ${new Date().toLocaleString()}\n`;
-            report += `Patient: Kendra Sayson\n`;
-            report += `Period: ${allData[0].date} to ${allData[allData.length - 1].date}\n\n`;
+            showToast('📄 Generating PDF report...');
             
-            report += '=== SUMMARY ===\n';
-            report += `Total Days Tracked: ${allData.length}\n`;
+            allData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            let yPos = 20;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+            const maxWidth = pageWidth - 2 * margin;
+            
+            // Helper function to check page break
+            function checkPageBreak(requiredSpace = 20) {
+                if (yPos + requiredSpace > pageHeight - 20) {
+                    doc.addPage();
+                    yPos = 20;
+                    return true;
+                }
+                return false;
+            }
+            
+            // Title
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('PREGNANCY CARE TRACKING REPORT', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 10;
+            
+            // Header info
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Generated: ${new Date().toLocaleString()}`, margin, yPos);
+            yPos += 6;
+            doc.text(`Patient: Kendra Sayson`, margin, yPos);
+            yPos += 6;
+            doc.text(`Period: ${allData[0].date} to ${allData[allData.length - 1].date}`, margin, yPos);
+            yPos += 12;
+            
+            // Summary Section
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('SUMMARY STATISTICS', margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Total Days Tracked: ${allData.length}`, margin, yPos);
+            yPos += 6;
             
             const avgCompliance = Math.round(
                 allData.reduce((sum, day) => sum + day.compliance, 0) / allData.length
             );
-            report += `Average Compliance: ${avgCompliance}%\n\n`;
+            doc.text(`Average Compliance: ${avgCompliance}%`, margin, yPos);
+            yPos += 6;
             
-            report += '=== DAILY DETAILS ===\n';
+            // Calculate streaks
+            let bestStreak = 0;
+            let tempStreak = 0;
             allData.forEach(day => {
-                report += `\nDate: ${day.date}\n`;
-                report += `Compliance: ${day.compliance}%\n`;
-                if (day.notes) report += `Notes: ${day.notes}\n`;
-                if (day.sugarReadings && day.sugarReadings.length > 0) {
-                    report += 'Sugar Readings:\n';
+                if (day.compliance >= 80) {
+                    tempStreak++;
+                    if (tempStreak > bestStreak) bestStreak = tempStreak;
+                } else {
+                    tempStreak = 0;
+                }
+            });
+            doc.text(`Best Compliance Streak: ${bestStreak} days`, margin, yPos);
+            yPos += 10;
+            
+            // Blood Sugar Analytics
+            const allSugarLevels = [];
+            allData.forEach(day => {
+                if (day.sugarReadings) {
                     day.sugarReadings.forEach(reading => {
-                        const time = reading.time || 'N/A';
-                        const level = reading.level != null ? `${reading.level} mg/dL` : 'N/A';
-                        const notes = reading.notes ? ` (${reading.notes})` : '';
-                        report += `  - ${time}: ${level}${notes}\n`;
+                        if (reading.level != null && !Number.isNaN(reading.level)) {
+                            allSugarLevels.push(reading.level);
+                        }
                     });
                 }
             });
             
-            const blob = new Blob([report], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `pregnancy-report-${new Date().toISOString().split('T')[0]}.txt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            if (allSugarLevels.length > 0) {
+                checkPageBreak(30);
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Blood Sugar Analysis', margin, yPos);
+                yPos += 7;
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                const sugarAvg = allSugarLevels.reduce((sum, v) => sum + v, 0) / allSugarLevels.length;
+                const sugarMin = Math.min(...allSugarLevels);
+                const sugarMax = Math.max(...allSugarLevels);
+                
+                doc.text(`Average: ${sugarAvg.toFixed(1)} mg/dL`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`Minimum: ${sugarMin.toFixed(1)} mg/dL`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`Maximum: ${sugarMax.toFixed(1)} mg/dL`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`Total Readings: ${allSugarLevels.length}`, margin + 5, yPos);
+                yPos += 6;
+                
+                // Trend assessment
+                if (sugarAvg < 70) {
+                    doc.setTextColor(52, 152, 219);
+                    doc.text(`Status: LOW - Consult your doctor`, margin + 5, yPos);
+                } else if (sugarAvg > 140) {
+                    doc.setTextColor(231, 76, 60);
+                    doc.text(`Status: HIGH - Review diet and medications`, margin + 5, yPos);
+                } else {
+                    doc.setTextColor(39, 174, 96);
+                    doc.text(`Status: NORMAL - Within healthy range`, margin + 5, yPos);
+                }
+                doc.setTextColor(0, 0, 0);
+                yPos += 10;
+            }
+            
+            // Medication Adherence
+            checkPageBreak(30);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Medication Adherence', margin, yPos);
+            yPos += 7;
+            
+            const medStats = {};
+            allData.forEach(day => {
+                if (day.medications) {
+                    Object.entries(day.medications).forEach(([med, taken]) => {
+                        if (!medStats[med]) medStats[med] = { taken: 0, total: 0 };
+                        medStats[med].total++;
+                        if (taken) medStats[med].taken++;
+                    });
+                }
+            });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            Object.entries(medStats).forEach(([med, stats]) => {
+                checkPageBreak(8);
+                const percentage = Math.round((stats.taken / stats.total) * 100);
+                const medName = med.replace(/-/g, ' ');
+                doc.text(`${medName}: ${stats.taken}/${stats.total} (${percentage}%)`, margin + 5, yPos);
+                yPos += 6;
+            });
+            yPos += 4;
+            
+            // Meal Compliance
+            checkPageBreak(30);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Meal Compliance', margin, yPos);
+            yPos += 7;
+            
+            const mealStats = {};
+            allData.forEach(day => {
+                if (day.meals) {
+                    Object.entries(day.meals).forEach(([meal, taken]) => {
+                        if (!mealStats[meal]) mealStats[meal] = { taken: 0, total: 0 };
+                        mealStats[meal].total++;
+                        if (taken) mealStats[meal].taken++;
+                    });
+                }
+            });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            Object.entries(mealStats).forEach(([meal, stats]) => {
+                checkPageBreak(8);
+                const percentage = Math.round((stats.taken / stats.total) * 100);
+                const mealName = meal.replace(/-/g, ' ');
+                doc.text(`${mealName}: ${stats.taken}/${stats.total} (${percentage}%)`, margin + 5, yPos);
+                yPos += 6;
+            });
+            yPos += 8;
+            
+            // Daily Details
+            doc.addPage();
+            yPos = 20;
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('DAILY TRACKING DETAILS', margin, yPos);
+            yPos += 10;
+            
+            allData.forEach((day, index) => {
+                checkPageBreak(40);
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                const dateStr = new Date(day.date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                doc.text(`${dateStr}`, margin, yPos);
+                yPos += 6;
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                
+                // Compliance
+                const compColor = day.compliance >= 80 ? [39, 174, 96] : [231, 76, 60];
+                doc.setTextColor(...compColor);
+                doc.text(`Compliance: ${day.compliance}%`, margin + 5, yPos);
+                doc.setTextColor(0, 0, 0);
+                yPos += 6;
+                
+                // Medications
+                if (day.medications) {
+                    const medTaken = Object.values(day.medications).filter(v => v).length;
+                    const medTotal = Object.keys(day.medications).length;
+                    doc.text(`Medications: ${medTaken}/${medTotal}`, margin + 5, yPos);
+                    yPos += 5;
+                }
+                
+                // Meals
+                if (day.meals) {
+                    const mealsTaken = Object.values(day.meals).filter(v => v).length;
+                    const mealsTotal = Object.keys(day.meals).length;
+                    doc.text(`Meals: ${mealsTaken}/${mealsTotal}`, margin + 5, yPos);
+                    yPos += 5;
+                }
+                
+                // Sugar readings
+                if (day.sugarReadings && day.sugarReadings.length > 0) {
+                    doc.text(`Blood Sugar (${day.sugarReadings.length} readings):`, margin + 5, yPos);
+                    yPos += 5;
+                    day.sugarReadings.forEach(reading => {
+                        checkPageBreak(6);
+                        const time = reading.time || 'N/A';
+                        const level = reading.level != null ? `${reading.level} mg/dL` : 'N/A';
+                        const notes = reading.notes ? ` - ${reading.notes}` : '';
+                        doc.setFontSize(9);
+                        doc.text(`  ${time}: ${level}${notes}`, margin + 10, yPos);
+                        doc.setFontSize(10);
+                        yPos += 5;
+                    });
+                }
+                
+                // Notes
+                if (day.notes) {
+                    checkPageBreak(15);
+                    doc.text('Notes:', margin + 5, yPos);
+                    yPos += 5;
+                    const noteLines = doc.splitTextToSize(day.notes, maxWidth - 15);
+                    noteLines.forEach(line => {
+                        checkPageBreak(6);
+                        doc.setFontSize(9);
+                        doc.text(line, margin + 10, yPos);
+                        doc.setFontSize(10);
+                        yPos += 5;
+                    });
+                }
+                
+                yPos += 5;
+            });
+            
+            // Footer on last page
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text('Generated by Pregnancy Care Tracker', pageWidth / 2, pageHeight - 10, { align: 'center' });
+            
+            // Save PDF
+            const filename = `pregnancy-report-${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+            showToast('✅ PDF report generated successfully!');
         }
 
         function printReport() {
@@ -1775,8 +2248,21 @@
             const today = new Date();
             const thirtyDaysAgo = new Date(today);
             thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            // Initialize history dates
             document.getElementById('historyFrom').value = TrackerData.getDateKey(thirtyDaysAgo);
             document.getElementById('historyTo').value = TrackerData.getDateKey(today);
+            
+            // Initialize report dates
+            const allData = TrackerData.getAllDays();
+            if (allData.length > 0) {
+                const dates = allData.map(d => d.date).sort();
+                document.getElementById('reportFrom').value = dates[0];
+                document.getElementById('reportTo').value = dates[dates.length - 1];
+            } else {
+                document.getElementById('reportFrom').value = TrackerData.getDateKey(thirtyDaysAgo);
+                document.getElementById('reportTo').value = TrackerData.getDateKey(today);
+            }
 
             const dailyPicker = document.getElementById('dailyDatePicker');
             if (dailyPicker) {
