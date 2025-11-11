@@ -1107,6 +1107,227 @@
         .history-item {
             animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* Kick Counter Styles */
+        .kick-counter-main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .kick-display, .kick-timer, .water-tracker {
+            background: var(--neutral-50);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            text-align: center;
+        }
+
+        .kick-count, .water-count {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary-500);
+            line-height: 1;
+            letter-spacing: -0.05em;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.05em;
+        }
+
+        .kick-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: var(--space-3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        /* Contraction Timer Styles */
+        .contraction-timer-main {
+            background: var(--neutral-50);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            text-align: center;
+        }
+
+        .status-indicator {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .contraction-duration {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--primary-500);
+            font-family: 'Courier New', monospace;
+        }
+
+        .contraction-item {
+            background: var(--surface-base);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Vitals Grid */
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .vital-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .vital-input-group label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .vital-input-group input {
+            width: 100%;
+        }
+
+        .vital-record {
+            background: var(--neutral-50);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: var(--space-4);
+            align-items: center;
+        }
+
+        .vital-time {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .vital-values {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .vital-value {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .vital-value-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .vital-value-number {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Symptoms Grid */
+        .symptoms-grid, .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-3);
+        }
+
+        .symptom-checkbox, .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3);
+            background: var(--neutral-50);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .symptom-checkbox:hover, .checklist-item:hover {
+            background: var(--surface-base);
+            border-color: var(--neutral-300);
+        }
+
+        .symptom-checkbox input, .checklist-item input {
+            margin: 0;
+        }
+
+        .symptom-checkbox span, .checklist-item span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Appointments */
+        .appointment-item {
+            background: var(--neutral-50);
+            border-left: 4px solid var(--primary-500);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+        }
+
+        .appointment-date {
+            font-size: 0.75rem;
+            color: var(--primary-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-2);
+        }
+
+        .appointment-details {
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        /* Water Tracker */
+        .water-goal {
+            margin-bottom: var(--space-6);
+        }
+
+        /* Alert Badge */
+        .alert-badge {
+            display: inline-block;
+            background: var(--error-500);
+            color: white;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: var(--space-2);
+        }
+
+        .success-badge {
+            background: var(--success-500);
+        }
     </style>
 </head>
 <body>
@@ -1117,13 +1338,18 @@
             <div class="date-info">
                 <div><strong>Patient:</strong> Kendra Sayson</div>
                 <div><strong>Today:</strong> <span id="currentDate"></span></div>
-                <div><strong>Week:</strong> <span id="weekNumber"></span> of Pregnancy</div>
+                <div><strong>Gestational Age:</strong> <span id="weekNumber"></span></div>
+                <div><strong>Trimester:</strong> <span id="trimesterInfo"></span></div>
+                <div><strong>Due Date:</strong> <span id="dueDate"></span> (<span id="daysUntilDue"></span> days)</div>
             </div>
         </div>
 
         <!-- Navigation Tabs -->
         <div class="tabs">
             <button class="tab active" data-tab="daily" onclick="switchTab('daily', this)">Daily Tracker</button>
+            <button class="tab" data-tab="kicks" onclick="switchTab('kicks', this)">Kick Counter</button>
+            <button class="tab" data-tab="contractions" onclick="switchTab('contractions', this)">Contractions</button>
+            <button class="tab" data-tab="vitals" onclick="switchTab('vitals', this)">Vitals</button>
             <button class="tab" data-tab="weekly" onclick="switchTab('weekly', this)">Weekly View</button>
             <button class="tab" data-tab="history" onclick="switchTab('history', this)">History</button>
             <button class="tab" data-tab="reports" onclick="switchTab('reports', this)">Reports</button>
@@ -1327,6 +1553,179 @@
             </div>
         </div>
 
+        <!-- Kick Counter Tab -->
+        <div id="kicks-tab" class="tab-content">
+            <h2>Kick Counter</h2>
+            
+            <div class="reminder" style="background: var(--primary-50); border-color: var(--primary-500);">
+                <strong>Guidelines for Kick Counting</strong>
+                <ul>
+                    <li>Count kicks when baby is usually most active (often after meals)</li>
+                    <li>Goal: 10 movements within 2 hours is normal</li>
+                    <li>Count strong kicks, rolls, flutters, and swishes</li>
+                    <li>Contact your doctor if you notice decreased movement</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="kick-counter-main">
+                    <div class="kick-display">
+                        <div class="kick-count" id="kickCount">0</div>
+                        <div class="kick-label">Kicks Counted</div>
+                    </div>
+                    <div class="kick-timer">
+                        <div class="timer-display" id="kickTimer">00:00:00</div>
+                        <div class="kick-label">Time Elapsed</div>
+                    </div>
+                </div>
+                
+                <div class="button-group" style="margin-top: var(--space-6);">
+                    <button class="save-btn" id="kickStartBtn" onclick="startKickSession()">Start Session</button>
+                    <button class="export-btn" id="kickBtn" onclick="recordKick()" disabled>Record Kick</button>
+                    <button class="reset-btn" id="kickStopBtn" onclick="stopKickSession()" disabled>Complete Session</button>
+                </div>
+
+                <div id="kickSessionSummary" class="sugar-summary" style="display: none; margin-top: var(--space-4);"></div>
+            </div>
+
+            <div class="section">
+                <h3>Today's Kick Sessions</h3>
+                <div id="kickSessionsList"></div>
+            </div>
+
+            <div class="section">
+                <h3>Recent Sessions History</h3>
+                <div id="kickHistory"></div>
+            </div>
+        </div>
+
+        <!-- Contractions Timer Tab -->
+        <div id="contractions-tab" class="tab-content">
+            <h2>Contraction Timer</h2>
+            
+            <div class="reminder" style="background: var(--warning-50); border-color: var(--warning-500);">
+                <strong>When to Go to Hospital</strong>
+                <ul>
+                    <li>Contractions 5 minutes apart, lasting 1 minute each, for 1 hour (5-1-1 rule)</li>
+                    <li>Water breaks (even without contractions)</li>
+                    <li>Severe bleeding</li>
+                    <li>Decreased fetal movement</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="contraction-timer-main">
+                    <div class="contraction-status">
+                        <div class="status-indicator" id="contractionStatus">Ready</div>
+                        <div class="contraction-duration" id="contractionDuration">00:00</div>
+                    </div>
+                    
+                    <div class="button-group" style="margin-top: var(--space-6);">
+                        <button class="save-btn" id="contractionStartBtn" onclick="startContraction()">Start Contraction</button>
+                        <button class="export-btn" id="contractionEndBtn" onclick="endContraction()" disabled>End Contraction</button>
+                        <button class="reset-btn" onclick="clearContractions()">Clear All</button>
+                    </div>
+                </div>
+
+                <div id="contractionStats" style="margin-top: var(--space-6);"></div>
+            </div>
+
+            <div class="section">
+                <h3>Contraction Log</h3>
+                <div id="contractionsList"></div>
+            </div>
+        </div>
+
+        <!-- Vitals Tracking Tab -->
+        <div id="vitals-tab" class="tab-content">
+            <h2>Vitals & Symptoms Tracker</h2>
+
+            <div class="section">
+                <h3>Water Intake Tracker</h3>
+                <div class="water-tracker">
+                    <div class="water-goal">
+                        <div class="water-count" id="waterCount">0</div>
+                        <div class="kick-label">Liters Today (Goal: 2.5-3L)</div>
+                    </div>
+                    <div class="button-group" style="margin-top: var(--space-4);">
+                        <button class="save-btn" onclick="addWaterLiter(0.25)">+ 250ml</button>
+                        <button class="save-btn" onclick="addWaterLiter(0.5)">+ 500ml</button>
+                        <button class="save-btn" onclick="addWaterLiter(1)">+ 1L</button>
+                        <button class="reset-btn" onclick="resetWater()">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Symptoms Tracker</h3>
+                <div class="symptoms-grid">
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Headache">
+                        <span>Headache</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Nausea">
+                        <span>Nausea</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Swelling">
+                        <span>Swelling</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Back Pain">
+                        <span>Back Pain</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Contractions">
+                        <span>Braxton Hicks</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Fatigue">
+                        <span>Fatigue</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Dizziness">
+                        <span>Dizziness</span>
+                    </label>
+                    <label class="symptom-checkbox">
+                        <input type="checkbox" class="symptom-check" value="Heartburn">
+                        <span>Heartburn</span>
+                    </label>
+                </div>
+                <textarea id="symptomNotes" placeholder="Additional symptom notes..." style="margin-top: var(--space-4);"></textarea>
+                <button class="save-btn" onclick="saveSymptoms()" style="margin-top: var(--space-4);">Save Symptoms</button>
+            </div>
+
+            <div class="section">
+                <h3>Appointments Calendar</h3>
+                <div id="appointmentsList">
+                    <div class="appointment-item">
+                        <div class="appointment-date">Nov 14, 2025</div>
+                        <div class="appointment-details">
+                            <strong>Dr. Taleon</strong> - Prenatal Checkup
+                        </div>
+                    </div>
+                    <div class="appointment-item">
+                        <div class="appointment-date">2 weeks post-discharge</div>
+                        <div class="appointment-details">
+                            <strong>Dr. Brobo</strong> - Follow-up Visit
+                        </div>
+                    </div>
+                </div>
+                <button class="export-btn" onclick="addAppointment()" style="margin-top: var(--space-4);">+ Add Appointment</button>
+            </div>
+
+            <div class="section">
+                <h3>Hospital Bag Checklist</h3>
+                <div class="button-group" style="margin-bottom: var(--space-4);">
+                    <button class="save-btn" onclick="addBagItem()">+ Add Item</button>
+                </div>
+                <div class="checklist-grid" id="hospitalBagList">
+                    <!-- Items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Weekly View Tab -->
         <div id="weekly-tab" class="tab-content">
             <h2>This Week's Progress</h2>
@@ -1461,6 +1860,37 @@
     </div>
 
     <script>
+        // Pregnancy Configuration
+        const PREGNANCY_CONFIG = {
+            // Kendra is exactly 33 weeks on November 10, 2025
+            referenceDate: new Date('2025-11-10'),
+            referenceWeeks: 33,
+            // Calculate conception date and due date
+            get conceptionDate() {
+                const date = new Date(this.referenceDate);
+                date.setDate(date.getDate() - (this.referenceWeeks * 7));
+                return date;
+            },
+            get dueDate() {
+                const date = new Date(this.conceptionDate);
+                date.setDate(date.getDate() + (40 * 7)); // 40 weeks from conception
+                return date;
+            },
+            getCurrentWeeks() {
+                const today = new Date();
+                const diffTime = today - this.conceptionDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const weeks = Math.floor(diffDays / 7);
+                const days = diffDays % 7;
+                return { weeks, days, totalDays: diffDays };
+            },
+            getDaysUntilDue() {
+                const today = new Date();
+                const diffTime = this.dueDate - today;
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+        };
+
         // Data structure for tracking
         const TrackerData = {
             getDateKey(date) {
@@ -1511,6 +1941,7 @@
         let currentDailyDate = TrackerData.getDateKey(new Date());
         let currentCalendarDate = TrackerData.getDateKey(new Date());
 
+        // Update date display with accurate pregnancy info
         function updateDate() {
             const today = new Date();
             document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
@@ -1520,12 +1951,24 @@
                 day: 'numeric'
             });
             
-            // Calculate pregnancy week (32 weeks as of Nov 7, 2025)
-            const baseDate = new Date('2025-11-07');
-            const diffTime = Math.abs(today - baseDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const additionalWeeks = Math.floor(diffDays / 7);
-            document.getElementById('weekNumber').textContent = 32 + additionalWeeks;
+            // Calculate accurate gestational age
+            const { weeks, days } = PREGNANCY_CONFIG.getCurrentWeeks();
+            const daysUntilDue = PREGNANCY_CONFIG.getDaysUntilDue();
+            
+            document.getElementById('weekNumber').textContent = `${weeks}w ${days}d`;
+            document.getElementById('dueDate').textContent = PREGNANCY_CONFIG.dueDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            document.getElementById('daysUntilDue').textContent = daysUntilDue;
+            
+            // Update trimester info
+            let trimester = '';
+            if (weeks < 13) trimester = 'First Trimester';
+            else if (weeks < 27) trimester = 'Second Trimester';
+            else trimester = 'Third Trimester';
+            document.getElementById('trimesterInfo').textContent = trimester;
         }
 
         // Tab switching
@@ -2542,6 +2985,512 @@
             });
         }
 
+        // ==================== KICK COUNTER ====================
+        let kickSession = {
+            active: false,
+            startTime: null,
+            count: 0,
+            kicks: [],
+            timerInterval: null
+        };
+
+        function startKickSession() {
+            kickSession.active = true;
+            kickSession.startTime = new Date();
+            kickSession.count = 0;
+            kickSession.kicks = [];
+            
+            document.getElementById('kickStartBtn').disabled = true;
+            document.getElementById('kickBtn').disabled = false;
+            document.getElementById('kickStopBtn').disabled = false;
+            document.getElementById('kickSessionSummary').style.display = 'none';
+            
+            kickSession.timerInterval = setInterval(updateKickTimer, 1000);
+            showToast('Kick counting session started');
+        }
+
+        function updateKickTimer() {
+            if (!kickSession.active) return;
+            
+            const elapsed = Math.floor((new Date() - kickSession.startTime) / 1000);
+            const hours = Math.floor(elapsed / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            const seconds = elapsed % 60;
+            
+            document.getElementById('kickTimer').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function recordKick() {
+            if (!kickSession.active) return;
+            
+            kickSession.count++;
+            kickSession.kicks.push(new Date());
+            document.getElementById('kickCount').textContent = kickSession.count;
+            
+            if (kickSession.count === 10) {
+                const elapsed = (new Date() - kickSession.startTime) / 1000 / 60; // minutes
+                if (elapsed <= 120) {
+                    showToast('Goal reached! 10 kicks in ' + Math.round(elapsed) + ' minutes');
+                }
+            }
+        }
+
+        function stopKickSession() {
+            if (!kickSession.active) return;
+            
+            kickSession.active = false;
+            clearInterval(kickSession.timerInterval);
+            
+            const endTime = new Date();
+            const durationMinutes = Math.round((endTime - kickSession.startTime) / 1000 / 60);
+            
+            // Save session
+            const dateKey = TrackerData.getDateKey(endTime);
+            const todayData = TrackerData.loadDay(dateKey) || { date: dateKey };
+            if (!todayData.kickSessions) todayData.kickSessions = [];
+            
+            todayData.kickSessions.push({
+                startTime: kickSession.startTime.toISOString(),
+                endTime: endTime.toISOString(),
+                count: kickSession.count,
+                durationMinutes: durationMinutes,
+                kicks: kickSession.kicks.map(k => k.toISOString())
+            });
+            
+            TrackerData.saveDay(todayData);
+            
+            // Show summary
+            const status = kickSession.count >= 10 && durationMinutes <= 120 ? 
+                '<span class="success-badge">Normal</span>' : 
+                '<span class="alert-badge">Review</span>';
+            
+            document.getElementById('kickSessionSummary').innerHTML = 
+                `Session Complete: ${kickSession.count} kicks in ${durationMinutes} minutes ${status}`;
+            document.getElementById('kickSessionSummary').style.display = 'block';
+            
+            // Reset UI
+            document.getElementById('kickCount').textContent = '0';
+            document.getElementById('kickTimer').textContent = '00:00:00';
+            document.getElementById('kickStartBtn').disabled = false;
+            document.getElementById('kickBtn').disabled = true;
+            document.getElementById('kickStopBtn').disabled = true;
+            
+            loadKickSessions();
+            showToast('Kick session saved');
+        }
+
+        function loadKickSessions() {
+            const today = new Date();
+            const dateKey = TrackerData.getDateKey(today);
+            const todayData = TrackerData.loadDay(dateKey);
+            
+            const sessionsList = document.getElementById('kickSessionsList');
+            const historyDiv = document.getElementById('kickHistory');
+            
+            if (todayData && todayData.kickSessions && todayData.kickSessions.length > 0) {
+                sessionsList.innerHTML = todayData.kickSessions.map((session, idx) => {
+                    const status = session.count >= 10 && session.durationMinutes <= 120 ? 
+                        '<span class="success-badge">Normal</span>' : 
+                        '<span class="alert-badge">Review</span>';
+                    return `
+                        <div class="history-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Session ${idx + 1}</strong> - ${new Date(session.startTime).toLocaleTimeString()}
+                                </div>
+                                ${status}
+                            </div>
+                            <div style="margin-top: var(--space-2); color: var(--text-secondary);">
+                                ${session.count} kicks in ${session.durationMinutes} minutes
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                sessionsList.innerHTML = '<div class="empty-state">No sessions recorded today</div>';
+            }
+            
+            // Load recent history (last 7 days)
+            const history = [];
+            for (let i = 1; i <= 7; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const key = TrackerData.getDateKey(date);
+                const data = TrackerData.loadDay(key);
+                if (data && data.kickSessions) {
+                    history.push({ date: key, sessions: data.kickSessions });
+                }
+            }
+            
+            if (history.length > 0) {
+                historyDiv.innerHTML = history.map(day => `
+                    <div class="history-item">
+                        <strong>${new Date(day.date).toLocaleDateString()}</strong>
+                        <div style="margin-top: var(--space-2);">
+                            ${day.sessions.length} session(s) - Average: ${Math.round(day.sessions.reduce((sum, s) => sum + s.count, 0) / day.sessions.length)} kicks
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                historyDiv.innerHTML = '<div class="empty-state">No recent history</div>';
+            }
+        }
+
+        // ==================== CONTRACTION TIMER ====================
+        let contractionData = {
+            active: false,
+            startTime: null,
+            timerInterval: null,
+            contractions: []
+        };
+
+        function startContraction() {
+            contractionData.active = true;
+            contractionData.startTime = new Date();
+            
+            document.getElementById('contractionStatus').textContent = 'TIMING...';
+            document.getElementById('contractionStatus').style.color = 'var(--warning-500)';
+            document.getElementById('contractionStartBtn').disabled = true;
+            document.getElementById('contractionEndBtn').disabled = false;
+            
+            contractionData.timerInterval = setInterval(updateContractionTimer, 100);
+        }
+
+        function updateContractionTimer() {
+            if (!contractionData.active) return;
+            
+            const elapsed = (new Date() - contractionData.startTime) / 1000;
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = Math.floor(elapsed % 60);
+            
+            document.getElementById('contractionDuration').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function endContraction() {
+            if (!contractionData.active) return;
+            
+            contractionData.active = false;
+            clearInterval(contractionData.timerInterval);
+            
+            const endTime = new Date();
+            const duration = Math.floor((endTime - contractionData.startTime) / 1000);
+            
+            contractionData.contractions.push({
+                startTime: contractionData.startTime,
+                endTime: endTime,
+                duration: duration
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('contractions_today', JSON.stringify(contractionData.contractions));
+            
+            document.getElementById('contractionStatus').textContent = 'Ready';
+            document.getElementById('contractionStatus').style.color = 'var(--text-primary)';
+            document.getElementById('contractionDuration').textContent = '00:00';
+            document.getElementById('contractionStartBtn').disabled = false;
+            document.getElementById('contractionEndBtn').disabled = true;
+            
+            loadContractions();
+            showToast('Contraction recorded');
+        }
+
+        function loadContractions() {
+            const saved = localStorage.getItem('contractions_today');
+            if (saved) {
+                contractionData.contractions = JSON.parse(saved).map(c => ({
+                    ...c,
+                    startTime: new Date(c.startTime),
+                    endTime: new Date(c.endTime)
+                }));
+            }
+            
+            const list = document.getElementById('contractionsList');
+            const stats = document.getElementById('contractionStats');
+            
+            if (contractionData.contractions.length === 0) {
+                list.innerHTML = '<div class="empty-state">No contractions recorded today</div>';
+                stats.innerHTML = '';
+                return;
+            }
+            
+            // Calculate statistics
+            const avgDuration = contractionData.contractions.reduce((sum, c) => sum + c.duration, 0) / contractionData.contractions.length;
+            
+            let avgFrequency = 0;
+            if (contractionData.contractions.length > 1) {
+                const intervals = [];
+                for (let i = 1; i < contractionData.contractions.length; i++) {
+                    const interval = (contractionData.contractions[i].startTime - contractionData.contractions[i-1].startTime) / 1000 / 60;
+                    intervals.push(interval);
+                }
+                avgFrequency = intervals.reduce((sum, i) => sum + i, 0) / intervals.length;
+            }
+            
+            // Check 5-1-1 rule
+            const last3 = contractionData.contractions.slice(-3);
+            let alert = '';
+            if (last3.length === 3) {
+                const allLongEnough = last3.every(c => c.duration >= 60);
+                const intervals = [];
+                for (let i = 1; i < last3.length; i++) {
+                    intervals.push((last3[i].startTime - last3[i-1].startTime) / 1000 / 60);
+                }
+                const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
+                
+                if (allLongEnough && avgInterval <= 5) {
+                    alert = '<div class="reminder" style="background: var(--error-50); border-color: var(--error-500);"><strong>ALERT: Consider going to hospital (5-1-1 rule)</strong></div>';
+                }
+            }
+            
+            stats.innerHTML = `
+                ${alert}
+                <div class="summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="summary-item">
+                        <div class="summary-value">${contractionData.contractions.length}</div>
+                        <div class="summary-label">Total Contractions</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">${Math.round(avgDuration)}s</div>
+                        <div class="summary-label">Avg Duration</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">${avgFrequency > 0 ? Math.round(avgFrequency) + ' min' : 'N/A'}</div>
+                        <div class="summary-label">Avg Frequency</div>
+                    </div>
+                </div>
+            `;
+            
+            list.innerHTML = contractionData.contractions.map((c, idx) => `
+                <div class="contraction-item">
+                    <div>
+                        <strong>Contraction ${idx + 1}</strong>
+                        <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                            ${c.startTime.toLocaleTimeString()} - Duration: ${c.duration}s
+                        </div>
+                    </div>
+                    <button class="sugar-remove" onclick="removeContraction(${idx})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeContraction(index) {
+            contractionData.contractions.splice(index, 1);
+            localStorage.setItem('contractions_today', JSON.stringify(contractionData.contractions));
+            loadContractions();
+        }
+
+        function clearContractions() {
+            if (confirm('Clear all contractions for today?')) {
+                contractionData.contractions = [];
+                localStorage.removeItem('contractions_today');
+                loadContractions();
+                showToast('Contractions cleared');
+            }
+        }
+
+        // ==================== WATER INTAKE (LITERS) ====================
+        function addWaterLiter(amount) {
+            const dateKey = TrackerData.getDateKey(new Date());
+            const todayData = TrackerData.loadDay(dateKey) || { date: dateKey };
+            if (!todayData.waterIntake) todayData.waterIntake = 0;
+            
+            todayData.waterIntake += amount;
+            todayData.waterIntake = Math.round(todayData.waterIntake * 100) / 100; // Round to 2 decimals
+            TrackerData.saveDay(todayData);
+            
+            document.getElementById('waterCount').textContent = todayData.waterIntake.toFixed(1);
+            
+            if (todayData.waterIntake >= 2.5) {
+                showToast('Great! You\'ve reached your water goal');
+            }
+        }
+
+        function resetWater() {
+            if (confirm('Reset water intake for today?')) {
+                const dateKey = TrackerData.getDateKey(new Date());
+                const todayData = TrackerData.loadDay(dateKey) || { date: dateKey };
+                todayData.waterIntake = 0;
+                TrackerData.saveDay(todayData);
+                
+                document.getElementById('waterCount').textContent = '0.0';
+                showToast('Water intake reset');
+            }
+        }
+
+        function loadWater() {
+            const dateKey = TrackerData.getDateKey(new Date());
+            const todayData = TrackerData.loadDay(dateKey);
+            
+            if (todayData && todayData.waterIntake) {
+                document.getElementById('waterCount').textContent = todayData.waterIntake.toFixed(1);
+            } else {
+                document.getElementById('waterCount').textContent = '0.0';
+            }
+        }
+
+        // ==================== SYMPTOMS TRACKER ====================
+        function saveSymptoms() {
+            const symptoms = Array.from(document.querySelectorAll('.symptom-check:checked')).map(cb => cb.value);
+            const notes = document.getElementById('symptomNotes').value;
+            
+            const dateKey = TrackerData.getDateKey(new Date());
+            const todayData = TrackerData.loadDay(dateKey) || { date: dateKey };
+            
+            todayData.symptoms = {
+                list: symptoms,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+            
+            TrackerData.saveDay(todayData);
+            showToast('Symptoms saved successfully');
+        }
+
+        function loadSymptoms() {
+            const dateKey = TrackerData.getDateKey(new Date());
+            const todayData = TrackerData.loadDay(dateKey);
+            
+            // Clear all checkboxes first
+            document.querySelectorAll('.symptom-check').forEach(cb => cb.checked = false);
+            document.getElementById('symptomNotes').value = '';
+            
+            if (todayData && todayData.symptoms) {
+                todayData.symptoms.list.forEach(symptom => {
+                    const checkbox = document.querySelector(`.symptom-check[value="${symptom}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+                if (todayData.symptoms.notes) {
+                    document.getElementById('symptomNotes').value = todayData.symptoms.notes;
+                }
+            }
+        }
+
+        // ==================== HOSPITAL BAG CHECKLIST (DYNAMIC) ====================
+        const defaultBagItems = [
+            'ID & Insurance Documents',
+            'Comfortable Nightgowns',
+            'Toiletries & Personal Items',
+            'Baby Clothes (newborn size)',
+            'Diapers & Wipes',
+            'Baby Blankets',
+            'Car Seat (installed)',
+            'Phone & Charger',
+            'Snacks & Water',
+            'Going Home Outfit (Mom & Baby)',
+            'Nursing Bras & Pads',
+            'Current Medications'
+        ];
+
+        function loadHospitalBag() {
+            const saved = localStorage.getItem('hospital_bag_items');
+            let items = saved ? JSON.parse(saved) : defaultBagItems.map(name => ({ name, checked: false }));
+            
+            const listDiv = document.getElementById('hospitalBagList');
+            listDiv.innerHTML = items.map((item, index) => `
+                <div class="checklist-item" style="display: flex; justify-content: space-between; align-items: center; padding-right: var(--space-2);">
+                    <label style="display: flex; align-items: center; gap: var(--space-2); flex: 1; cursor: pointer;">
+                        <input type="checkbox" class="bag-check" data-index="${index}" ${item.checked ? 'checked' : ''}>
+                        <span>${item.name}</span>
+                    </label>
+                    <button class="sugar-remove" onclick="removeBagItem(${index})" style="padding: var(--space-1) var(--space-2); font-size: 0.75rem;">×</button>
+                </div>
+            `).join('');
+            
+            // Add event listeners
+            document.querySelectorAll('.bag-check').forEach(cb => {
+                cb.addEventListener('change', saveHospitalBag);
+            });
+        }
+
+        function saveHospitalBag() {
+            const checkboxes = document.querySelectorAll('.bag-check');
+            const items = Array.from(checkboxes).map(cb => ({
+                name: cb.parentElement.querySelector('span').textContent,
+                checked: cb.checked
+            }));
+            localStorage.setItem('hospital_bag_items', JSON.stringify(items));
+        }
+
+        function addBagItem() {
+            const itemName = prompt('Enter item name:');
+            if (!itemName || !itemName.trim()) return;
+            
+            const saved = localStorage.getItem('hospital_bag_items');
+            const items = saved ? JSON.parse(saved) : defaultBagItems.map(name => ({ name, checked: false }));
+            
+            items.push({ name: itemName.trim(), checked: false });
+            localStorage.setItem('hospital_bag_items', JSON.stringify(items));
+            
+            loadHospitalBag();
+            showToast('Item added to checklist');
+        }
+
+        function removeBagItem(index) {
+            if (!confirm('Remove this item from checklist?')) return;
+            
+            const saved = localStorage.getItem('hospital_bag_items');
+            const items = saved ? JSON.parse(saved) : [];
+            
+            items.splice(index, 1);
+            localStorage.setItem('hospital_bag_items', JSON.stringify(items));
+            
+            loadHospitalBag();
+            showToast('Item removed');
+        }
+
+        // ==================== APPOINTMENTS ====================
+        function addAppointment() {
+            const date = prompt('Enter appointment date (MM/DD/YYYY):');
+            if (!date) return;
+            
+            const doctor = prompt('Enter doctor name:');
+            if (!doctor) return;
+            
+            const reason = prompt('Enter reason/type:');
+            if (!reason) return;
+            
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            appointments.push({ date, doctor, reason });
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+            
+            loadAppointments();
+            showToast('Appointment added');
+        }
+
+        function loadAppointments() {
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const list = document.getElementById('appointmentsList');
+            
+            if (appointments.length === 0) {
+                list.innerHTML = `
+                    <div class="appointment-item">
+                        <div class="appointment-date">Nov 14, 2025</div>
+                        <div class="appointment-details">
+                            <strong>Dr. Taleon</strong> - Prenatal Checkup
+                        </div>
+                    </div>
+                    <div class="appointment-item">
+                        <div class="appointment-date">2 weeks post-discharge</div>
+                        <div class="appointment-details">
+                            <strong>Dr. Brobo</strong> - Follow-up Visit
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = appointments.map(apt => `
+                <div class="appointment-item">
+                    <div class="appointment-date">${apt.date}</div>
+                    <div class="appointment-details">
+                        <strong>${apt.doctor}</strong> - ${apt.reason}
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
@@ -2588,6 +3537,27 @@
                     dailyPicker.value = currentDailyDate;
                 }
             }
+
+            // Initialize new features
+            loadKickSessions();
+            loadContractions();
+            loadWater();
+            loadSymptoms();
+            loadHospitalBag();
+            loadAppointments();
+            
+            // Auto-save symptoms on change
+            document.querySelectorAll('.symptom-check').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    clearTimeout(window.symptomSaveTimer);
+                    window.symptomSaveTimer = setTimeout(saveSymptoms, 1000);
+                });
+            });
+            
+            document.getElementById('symptomNotes')?.addEventListener('input', () => {
+                clearTimeout(window.symptomSaveTimer);
+                window.symptomSaveTimer = setTimeout(saveSymptoms, 2000);
+            });
 
             setInterval(detectNewDay, 60000);
         });
