@@ -440,6 +440,10 @@
             flex-wrap: wrap;
         }
 
+        .editing-date-picker {
+            margin-bottom: 20px;
+        }
+
         input[type="date"] {
             padding: 10px 14px;
             border: 1px solid var(--border-subtle);
@@ -483,6 +487,69 @@
             font-size: 12px;
             color: #666;
             margin-top: 5px;
+        }
+
+        .sugar-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .sugar-legend,
+        .sugar-row {
+            display: grid;
+            grid-template-columns: 140px 160px 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sugar-legend {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding: 0 8px;
+        }
+
+        .sugar-row {
+            background: var(--surface-base);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(36, 50, 77, 0.08);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 10px;
+        }
+
+        .sugar-row input,
+        .sugar-row textarea {
+            width: 100%;
+        }
+
+        .sugar-row textarea {
+            resize: vertical;
+            min-height: 40px;
+        }
+
+        .sugar-remove {
+            background: linear-gradient(135deg, #ff6b81, #ff9671);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .sugar-remove:hover {
+            box-shadow: 0 12px 24px rgba(255, 107, 129, 0.25);
+        }
+
+        .sugar-summary {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -656,10 +723,10 @@
 
         <!-- Navigation Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('daily')">📅 Daily Tracker</button>
-            <button class="tab" onclick="switchTab('weekly')">📊 Weekly View</button>
-            <button class="tab" onclick="switchTab('history')">📜 History</button>
-            <button class="tab" onclick="switchTab('reports')">📈 Reports</button>
+            <button class="tab active" data-tab="daily" onclick="switchTab('daily', this)">📅 Daily Tracker</button>
+            <button class="tab" data-tab="weekly" onclick="switchTab('weekly', this)">📊 Weekly View</button>
+            <button class="tab" data-tab="history" onclick="switchTab('history', this)">📜 History</button>
+            <button class="tab" data-tab="reports" onclick="switchTab('reports', this)">📈 Reports</button>
         </div>
 
         <!-- Daily Tab -->
@@ -671,6 +738,12 @@
                     <li>Low carbohydrate diet - avoid sweets, fatty & oily foods</li>
                     <li>Next appointment: Dr. Taleon - Nov 14, 2025 | Dr. Brobo - 2 weeks after discharge</li>
                 </ul>
+            </div>
+
+            <div class="date-picker editing-date-picker">
+                <label for="dailyDatePicker">Editing Day:</label>
+                <input type="date" id="dailyDatePicker" onchange="handleDailyDateChange(this.value)">
+                <button class="save-btn" type="button" onclick="setDailyDateToToday()">Today</button>
             </div>
 
             <div class="stats">
@@ -685,6 +758,10 @@
                 <div class="stat-card">
                     <div class="stat-number" id="todayScore">0%</div>
                     <div class="stat-label">Today's Compliance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgSugar">--</div>
+                    <div class="stat-label">Avg Blood Sugar</div>
                 </div>
             </div>
 
@@ -788,6 +865,20 @@
             </div>
 
             <div class="section">
+                <h2>🩸 Blood Sugar Monitoring</h2>
+                <div class="sugar-controls">
+                    <button class="save-btn" type="button" onclick="addSugarReading()">➕ Add Reading</button>
+                </div>
+                <div class="sugar-legend">
+                    <span>Time</span>
+                    <span>Level (mg/dL)</span>
+                    <span>Notes</span>
+                </div>
+                <div id="sugarList" class="sugar-list"></div>
+                <div class="sugar-summary" id="sugarSummary">No readings logged yet.</div>
+            </div>
+
+            <div class="section">
                 <h2>🍽️ Meal Schedule (1600 kcal/day)</h2>
                 <div class="meal-grid">
                     <div class="item">
@@ -853,7 +944,6 @@
             </div>
 
             <div class="button-group">
-                <button class="save-btn" onclick="saveDaily()">💾 Save Today's Progress</button>
                 <button class="reset-btn" onclick="resetDaily()">🔄 Reset Today</button>
                 <button class="export-btn" onclick="exportData()">📤 Export All Data</button>
             </div>
@@ -891,6 +981,10 @@
                     <div class="summary-item">
                         <div class="summary-value" id="weekDaysTracked">0/7</div>
                         <div class="summary-label">Days Tracked</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="weekAvgSugar">--</div>
+                        <div class="summary-label">Avg Blood Sugar</div>
                     </div>
                 </div>
             </div>
@@ -998,7 +1092,9 @@
 
         // Initialize
         let currentTab = 'daily';
-        
+        let currentDailyDate = TrackerData.getDateKey(new Date());
+        let currentCalendarDate = TrackerData.getDateKey(new Date());
+
         function updateDate() {
             const today = new Date();
             document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
@@ -1017,20 +1113,27 @@
         }
 
         // Tab switching
-        function switchTab(tabName) {
+        function switchTab(tabName, triggerButton = null) {
             currentTab = tabName;
-            
+
+            const targetButton = triggerButton || document.querySelector(`.tab[data-tab="${tabName}"]`);
+
             // Update tab buttons
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
             
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            const tabContent = document.getElementById(`${tabName}-tab`);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
             
             // Load tab-specific data
             switch(tabName) {
@@ -1047,6 +1150,13 @@
         }
 
         // Daily tracking functions
+        function scheduleAutoSave() {
+            clearTimeout(window.autoSaveTimer);
+            window.autoSaveTimer = setTimeout(() => {
+                saveDaily(currentDailyDate);
+            }, 2000);
+        }
+
         function updateStats() {
             const medChecks = document.querySelectorAll('.med-check:checked').length;
             const totalMeds = document.querySelectorAll('.med-check').length;
@@ -1058,11 +1168,13 @@
 
             const totalCompliance = Math.round(((medChecks + mealChecks) / (totalMeds + totalMeals)) * 100);
             document.getElementById('todayScore').textContent = `${totalCompliance}%`;
+            updateSugarSummary();
         }
 
-        function saveDaily() {
-            const today = TrackerData.getDateKey(new Date());
-            
+        function saveDaily(targetDate = currentDailyDate) {
+            const todayKey = TrackerData.getDateKey(new Date());
+            const dateToSave = targetDate || todayKey;
+
             // Collect medication data
             const medications = {};
             document.querySelectorAll('.med-check').forEach(cb => {
@@ -1080,27 +1192,37 @@
             const totalItems = Object.keys(medications).length + Object.keys(meals).length;
             const completedItems = medChecks + mealChecks;
             
+            const sugarReadings = getSugarReadingsFromDOM();
+
             const dailyData = {
-                date: today,
+                date: dateToSave,
                 medications: medications,
                 meals: meals,
                 notes: document.getElementById('dailyNotes').value,
+                sugarReadings: sugarReadings,
                 compliance: Math.round((completedItems / totalItems) * 100),
                 timestamp: new Date().toISOString()
             };
-            
+
             TrackerData.saveDay(dailyData);
-            showToast('✅ Progress saved successfully!');
-            
+            if (dateToSave === todayKey) {
+                showToast('✅ Progress saved successfully!');
+            } else {
+                showToast(`✅ Progress saved for ${new Date(dateToSave).toLocaleDateString()}`);
+            }
+
             // Refresh current tab
             if (currentTab === 'weekly') loadCurrentWeek();
             if (currentTab === 'history') loadHistory();
         }
 
-        function loadToday() {
-            const today = TrackerData.getDateKey(new Date());
-            const savedData = TrackerData.loadDay(today);
-            
+        function loadDaily(dateKey = currentDailyDate) {
+            const savedData = TrackerData.loadDay(dateKey);
+
+            document.getElementById('dailyDatePicker').value = dateKey;
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('dailyNotes').value = '';
+            renderSugarReadings([]);
             if (savedData) {
                 // Restore medications
                 Object.entries(savedData.medications || {}).forEach(([med, checked]) => {
@@ -1116,8 +1238,13 @@
                 
                 // Restore notes
                 document.getElementById('dailyNotes').value = savedData.notes || '';
+
+                // Restore sugar readings
+                renderSugarReadings(savedData.sugarReadings || []);
             }
+            currentDailyDate = dateKey;
             updateStats();
+            updateCheckboxVisuals();
         }
 
         function resetDaily() {
@@ -1125,6 +1252,152 @@
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
                 document.getElementById('dailyNotes').value = '';
                 updateStats();
+            }
+        }
+
+        function handleDailyDateChange(value) {
+            if (!value) return;
+            const selectedKey = value;
+            if (window.autoSaveTimer) {
+                clearTimeout(window.autoSaveTimer);
+                window.autoSaveTimer = null;
+            }
+            loadDaily(selectedKey);
+        }
+
+        function createSugarRow(reading = {}) {
+            const row = document.createElement('div');
+            row.className = 'sugar-row';
+
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.value = reading.time || '';
+
+            const levelInput = document.createElement('input');
+            levelInput.type = 'number';
+            levelInput.min = '0';
+            levelInput.step = '0.1';
+            levelInput.placeholder = 'e.g. 95';
+            levelInput.value = reading.level != null ? reading.level : '';
+
+            const notesInput = document.createElement('textarea');
+            notesInput.placeholder = 'Fasting, post-meal, etc.';
+            notesInput.value = reading.notes || '';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'sugar-remove';
+            removeBtn.innerHTML = '🗑️ Remove';
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+                updateSugarSummary();
+                scheduleAutoSave();
+            });
+
+            [timeInput, levelInput, notesInput].forEach(input => {
+                input.addEventListener('input', () => {
+                    updateSugarSummary();
+                    scheduleAutoSave();
+                });
+            });
+
+            row.appendChild(timeInput);
+            row.appendChild(levelInput);
+            row.appendChild(notesInput);
+            row.appendChild(removeBtn);
+
+            return row;
+        }
+
+        function renderSugarReadings(readings = []) {
+            const sugarList = document.getElementById('sugarList');
+            sugarList.innerHTML = '';
+
+            readings.forEach(reading => {
+                const row = createSugarRow(reading);
+                sugarList.appendChild(row);
+            });
+
+            if (readings.length === 0) {
+                updateSugarSummary();
+            }
+        }
+
+        function addSugarReading() {
+            const sugarList = document.getElementById('sugarList');
+            const newRow = createSugarRow();
+            sugarList.appendChild(newRow);
+            updateSugarSummary();
+            scheduleAutoSave();
+            const firstInput = newRow.querySelector('input, textarea');
+            if (firstInput) firstInput.focus();
+        }
+
+        function getSugarReadingsFromDOM() {
+            const rows = document.querySelectorAll('.sugar-row');
+            const readings = [];
+
+            rows.forEach(row => {
+                const [timeInput, levelInput] = row.querySelectorAll('input');
+                const notesInput = row.querySelector('textarea');
+
+                const time = timeInput ? timeInput.value : '';
+                const levelValue = levelInput ? parseFloat(levelInput.value) : NaN;
+                const notes = notesInput ? notesInput.value.trim() : '';
+
+                if (time || !Number.isNaN(levelValue) || notes) {
+                    readings.push({
+                        time,
+                        level: Number.isNaN(levelValue) ? null : levelValue,
+                        notes
+                    });
+                }
+            });
+
+            return readings;
+        }
+
+        function updateSugarSummary() {
+            const readings = getSugarReadingsFromDOM();
+            const summaryEl = document.getElementById('sugarSummary');
+            const avgEl = document.getElementById('avgSugar');
+
+            if (readings.length === 0) {
+                summaryEl.textContent = 'No readings logged yet.';
+                avgEl.textContent = '--';
+                return;
+            }
+
+            const levels = readings
+                .map(reading => reading.level)
+                .filter(level => level != null && !Number.isNaN(level));
+
+            if (levels.length === 0) {
+                summaryEl.textContent = `${readings.length} reading(s) recorded.`;
+                avgEl.textContent = '--';
+                return;
+            }
+
+            const total = levels.reduce((sum, val) => sum + val, 0);
+            const average = total / levels.length;
+            summaryEl.textContent = `${readings.length} reading(s). Average: ${average.toFixed(1)} mg/dL.`;
+            avgEl.textContent = `${average.toFixed(1)}`;
+        }
+
+        function setDailyDateToToday() {
+            const todayKey = TrackerData.getDateKey(new Date());
+            document.getElementById('dailyDatePicker').value = todayKey;
+            loadDaily(todayKey);
+        }
+
+        function detectNewDay() {
+            const todayKey = TrackerData.getDateKey(new Date());
+            if (todayKey !== currentCalendarDate) {
+                currentCalendarDate = todayKey;
+                currentDailyDate = todayKey;
+                loadDaily(todayKey);
+                updateDate();
+                showToast('🌅 New day detected. Daily tracker reset.');
             }
         }
 
@@ -1152,6 +1425,7 @@
             let daysTracked = 0;
             let totalMedsMissed = 0;
             let totalMealsMissed = 0;
+            let sugarLevels = [];
             
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
@@ -1174,6 +1448,13 @@
                     if (dayData.medications) {
                         totalMedsMissed += Object.values(dayData.medications).filter(v => !v).length;
                     }
+                    if (dayData.sugarReadings) {
+                        dayData.sugarReadings.forEach(reading => {
+                            if (reading.level != null && !Number.isNaN(reading.level)) {
+                                sugarLevels.push(reading.level);
+                            }
+                        });
+                    }
                     if (dayData.meals) {
                         totalMealsMissed += Object.values(dayData.meals).filter(v => !v).length;
                     }
@@ -1187,7 +1468,7 @@
                 
                 const dayCard = document.createElement('div');
                 dayCard.className = `day-card ${dayClass}`;
-                dayCard.onclick = () => viewDayDetails(dateKey);
+                dayCard.onclick = () => handleWeekDaySelection(dateKey);
                 dayCard.innerHTML = `
                     <div class="day-date">${days[i]}</div>
                     <div class="day-date">${currentDate.getDate()}</div>
@@ -1203,6 +1484,12 @@
             document.getElementById('weekMedsMissed').textContent = totalMedsMissed;
             document.getElementById('weekMealsMissed').textContent = totalMealsMissed;
             document.getElementById('weekDaysTracked').textContent = `${daysTracked}/7`;
+            if (sugarLevels.length > 0) {
+                const sugarAvg = sugarLevels.reduce((sum, v) => sum + v, 0) / sugarLevels.length;
+                document.getElementById('weekAvgSugar').textContent = `${sugarAvg.toFixed(1)}`;
+            } else {
+                document.getElementById('weekAvgSugar').textContent = '--';
+            }
         }
 
         function viewDayDetails(dateKey) {
@@ -1212,14 +1499,37 @@
                 return;
             }
             
-            let details = `Date: ${new Date(dateKey).toLocaleDateString()}\n`;
-            details += `Compliance: ${data.compliance}%\n\n`;
+            let details = `Date: ${new Date(dateKey).toLocaleDateString()}`;
+            details += `\nCompliance: ${data.compliance}%\n\n`;
             
             if (data.notes) {
                 details += `Notes: ${data.notes}\n`;
             }
             
             alert(details);
+        }
+
+        function handleWeekDaySelection(dateKey) {
+            const data = TrackerData.loadDay(dateKey);
+            const formattedDate = new Date(dateKey).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const complianceText = data ? `${data.compliance}% compliance` : 'No records yet';
+            const notesPreview = data && data.notes ? `\nNotes: ${data.notes}` : '';
+
+            const confirmation = confirm(`Date: ${formattedDate}\n${complianceText}${notesPreview}\n\nSwitch to Daily Tracker to edit this day?`);
+            if (!confirmation) {
+                return;
+            }
+
+            const dailyTabButton = document.querySelector('.tab[data-tab="daily"]');
+            switchTab('daily', dailyTabButton);
+            loadDaily(dateKey);
+            showToast(`📝 Editing ${formattedDate}`);
         }
 
         // History functions
@@ -1384,6 +1694,15 @@
                 report += `\nDate: ${day.date}\n`;
                 report += `Compliance: ${day.compliance}%\n`;
                 if (day.notes) report += `Notes: ${day.notes}\n`;
+                if (day.sugarReadings && day.sugarReadings.length > 0) {
+                    report += 'Sugar Readings:\n';
+                    day.sugarReadings.forEach(reading => {
+                        const time = reading.time || 'N/A';
+                        const level = reading.level != null ? `${reading.level} mg/dL` : 'N/A';
+                        const notes = reading.notes ? ` (${reading.notes})` : '';
+                        report += `  - ${time}: ${level}${notes}\n`;
+                    });
+                }
             });
             
             const blob = new Blob([report], { type: 'text/plain' });
@@ -1437,27 +1756,38 @@
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
-            loadToday();
-            
+            currentDailyDate = TrackerData.getDateKey(new Date());
+            loadDaily(currentDailyDate);
+
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                 cb.addEventListener('change', () => {
                     updateStats();
                     updateCheckboxVisuals();
                     clearTimeout(window.autoSaveTimer);
                     window.autoSaveTimer = setTimeout(() => {
-                        saveDaily();
+                        saveDaily(currentDailyDate);
                     }, 2000);
                 });
             });
-            
+
             updateCheckboxVisuals();
             
             const today = new Date();
             const thirtyDaysAgo = new Date(today);
             thirtyDaysAgo.setDate(today.getDate() - 30);
-            
             document.getElementById('historyFrom').value = TrackerData.getDateKey(thirtyDaysAgo);
             document.getElementById('historyTo').value = TrackerData.getDateKey(today);
+
+            const dailyPicker = document.getElementById('dailyDatePicker');
+            if (dailyPicker) {
+                const todayKey = TrackerData.getDateKey(today);
+                dailyPicker.setAttribute('max', todayKey);
+                if (!dailyPicker.value) {
+                    dailyPicker.value = currentDailyDate;
+                }
+            }
+
+            setInterval(detectNewDay, 60000);
         });
     </script>
 </body>
